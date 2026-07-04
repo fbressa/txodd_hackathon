@@ -12,3 +12,4 @@ test-ledger
 *-keypair.json
 keypairs/
 .env
+service/.txline-auth.json

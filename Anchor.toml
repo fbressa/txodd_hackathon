@@ -1,0 +1,21 @@
+[toolchain]
+package_manager = "npm"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+prediction_market = "FwFokFQm1uFrnvrSXKvTATXf2VY8GKnSoUpBrU5WWA85"
+
+[programs.devnet]
+prediction_market = "FwFokFQm1uFrnvrSXKvTATXf2VY8GKnSoUpBrU5WWA85"
+
+[provider]
+cluster = "localnet"
+wallet = "keypairs/devnet.json"
+
+[scripts]
+test = "cargo test"
+
+[hooks]

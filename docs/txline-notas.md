@@ -50,7 +50,56 @@
 - Odds snapshot: `GET /api/odds/snapshot/{fixtureId}` (não usamos no MVP)
 - API reference completa: `https://txline.txodds.com/docs/docs.yaml`
 
-## A OBSERVAR (preencher com respostas reais)
-- [ ] Formato completo de um fixture (campos além dos 5 listados; competitionId da Copa)
-- [ ] Formato de score update (como detectar partida encerrada — campo de status/período?)
-- [ ] Comportamento do replay histórico (granularidade do interval)
+## Formatos REAIS observados (05/07/2026, devnet)
+
+### `/api/token/activate`
+Retorna o token em **texto puro** (`txoracle_ap...`), não JSON. Tratar os dois casos.
+
+### Subscribe on-chain
+O programa **não cria a ATA do usuário** — exige `user_token_account` já
+inicializada (erro 3012 AccountNotInitialized). Solução: incluir
+`createAssociatedTokenAccountIdempotentInstruction` (Token-2022) na mesma tx.
+
+### Fixture (array de `/api/fixtures/snapshot`)
+```json
+{
+  "Ts": 1783162800000,            // timestamp do registro (ms)
+  "StartTime": 1783281600000,     // kickoff (ms) ← deadline do mercado
+  "Competition": "World Cup",
+  "CompetitionId": 72,            // ← Copa 2026 = 72 (Friendlies = 430)
+  "FixtureGroupId": 10115574,
+  "Participant1Id": 1634, "Participant1": "Brazil",
+  "Participant2Id": 2661, "Participant2": "Norway",
+  "FixtureId": 18187298,          // ← match_id / seed do market PDA
+  "Participant1IsHome": true
+}
+```
+Devnet em 05/07: 10 fixtures (8 da Copa, 2 amistosos), todas futuras.
+
+### Score event (`/api/scores/snapshot/{fixtureId}`, HTTP 200 = array de eventos)
+```json
+{
+  "FixtureId": 18187298,
+  "GameState": "scheduled",       // ← campo-chave p/ settlement (valores finais a observar)
+  "StartTime": 1783281600000,
+  "IsTeam": true, "FixtureGroupId": 10115574, "CompetitionId": 72,
+  "CountryId": 466, "SportId": 1, "Participant1IsHome": true,
+  "Participant1Id": 1634, "Participant2Id": 2661,
+  "Action": "comment",            // visto: "comment", "coverage_update"
+  "Id": 1, "Ts": 1782847947773, "ConnectionId": 815, "Seq": 1,
+  "Data": {}, "Stats": {}         // vazios em jogo "scheduled" — placar deve vir aqui
+}
+```
+
+### `/api/scores/updates/{fixtureId}`
+É um **stream SSE** (`event: scores`, `data: {...json...}`, `id: <seq>`) —
+mesmo shape de evento do snapshot. Consumir com EventSource/parser SSE, não JSON puro.
+
+### Replay histórico `/api/scores/updates/{epochDay}/{hourOfDay}/{interval}`
+- `epochDay` = floor(epochSeconds/86400). Testado 20614/20638 → `[]` HTTP 200
+  (nenhum jogo coberto ainda no devnet — 1º jogo: 05/07 20:00 UTC).
+
+## A OBSERVAR (após o 1º jogo — Brazil x Norway 05/07 20:00 UTC, fixture 18187298)
+- [ ] Valores de `GameState` durante e após o jogo (como detectar "encerrada")
+- [ ] Formato de `Data`/`Stats` com placar real
+- [ ] Replay histórico com conteúdo (granularidade do `interval`)

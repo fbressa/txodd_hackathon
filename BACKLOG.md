@@ -11,7 +11,7 @@
 - [x] E0.1 `git init` + `.gitignore` (target/, node_modules/, .anchor/, keypairs)
 - [x] E0.2 `anchor init` do workspace (programa `prediction_market`)
 - [x] E0.3 Configurar `Anchor.toml` para localnet (default) e devnet (cluster nomeado)
-- [~] E0.4 Keypair devnet dedicada (`BHpiHXaARUP1hzYbxsA8cTewTjE23D1YRg94hbuJD7mo`) — airdrop pendente (rate limit; usar faucet.solana.com)
+- [x] E0.4 Keypair devnet dedicada (`BHpiHXaARUP1hzYbxsA8cTewTjE23D1YRg94hbuJD7mo`) — 30 SOL via faucet
 
 > **Nota (04/07):** repo vive em `~/txodd` no **WSL Ubuntu** (builds rápidos,
 > fora do OneDrive). Anchor 1.0.1: template usa testes em **Rust**
@@ -20,12 +20,15 @@
 ## E1 — Credenciais TxLINE (risco desconhecido — fazer primeiro)
 **Critério de saída:** `npx ts-node service/subscribe.ts` imprime fixtures da Copa no terminal usando a API devnet.
 
-- [ ] E1.1 Confirmar na doc o program ID completo do txoracle devnet (`6pW64gN1...`)
-- [ ] E1.2 Script `subscribe.ts`: tx `subscribe(SL 1, 4 semanas)` no txoracle devnet
-- [ ] E1.3 Auth: `POST /auth/guest/start` → assinar `${txSig}::${jwt}` → `POST /api/token/activate`
-- [ ] E1.4 GET fixtures com headers `Authorization: Bearer` + `X-Api-Token`; imprimir no terminal
-- [ ] E1.5 Anotar em `docs/txline-notas.md` o formato real das respostas (fixtures, scores) — nunca inventar formato
-- [!] Bloqueio possível: doc não responder algo da API → perguntar no Telegram TxLINEChat
+- [x] E1.1 Program ID txoracle devnet: `6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J`
+- [x] E1.2 Script `subscribe.ts` (tx subscribe SL 1 / 4 semanas — exige criar ATA Token-2022 do user na mesma tx)
+- [x] E1.3 Auth completa (activate retorna token em texto puro, não JSON)
+- [x] E1.4 GET fixtures OK — Copa = CompetitionId 72; 10 fixtures no devnet em 05/07
+- [x] E1.5 `docs/txline-notas.md` com formatos reais (fixture, score event, SSE)
+
+> **Pendência E1 (não bloqueia E2):** observar `GameState` de partida encerrada
+> e formato de `Data`/`Stats` com placar após o 1º jogo do devnet
+> (Brazil x Norway, 05/07 20:00 UTC, fixture 18187298). Necessário para o E3.2.
 
 ## E2 — Programa Anchor (4 instruções)
 **Critério de saída:** `anchor test` verde cobrindo fluxo feliz + rejeições de segurança, com resultado mockado.

@@ -13,6 +13,7 @@ import {
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   TOKEN_2022_PROGRAM_ID,
+  createAssociatedTokenAccountIdempotentInstruction,
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
 import nacl from "tweetnacl";
@@ -83,7 +84,13 @@ async function subscribeOnChain(connection: Connection, user: Keypair): Promise<
     data,
   });
 
-  return sendAndConfirmTransaction(connection, new Transaction().add(ix), [user]);
+  // o programa exige a ATA do usuário já inicializada (AccountNotInitialized 3012)
+  const createAtaIx = createAssociatedTokenAccountIdempotentInstruction(
+    user.publicKey, userTokenAccount, user.publicKey, TXL_TOKEN_MINT,
+    TOKEN_2022_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID
+  );
+
+  return sendAndConfirmTransaction(connection, new Transaction().add(createAtaIx, ix), [user]);
 }
 
 async function main() {
@@ -126,8 +133,14 @@ async function main() {
     }),
   });
   if (!activateRes.ok) throw new Error(`activate HTTP ${activateRes.status}: ${await activateRes.text()}`);
-  const activateBody = await activateRes.json();
-  const apiToken = activateBody.token ?? activateBody;
+  // resposta pode ser JSON {token} ou o token em texto puro (ex.: "txoracle_ap...")
+  const activateText = await activateRes.text();
+  let apiToken: string;
+  try {
+    apiToken = JSON.parse(activateText).token ?? activateText;
+  } catch {
+    apiToken = activateText;
+  }
   console.log("api token ativado");
 
   fs.writeFileSync(AUTH_CACHE_PATH, JSON.stringify({ jwt, apiToken }, null, 2));

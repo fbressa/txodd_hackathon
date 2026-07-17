@@ -33,13 +33,18 @@
 ## E2 — Programa Anchor (4 instruções)
 **Critério de saída:** `anchor test` verde cobrindo fluxo feliz + rejeições de segurança, com resultado mockado.
 
-- [ ] E2.1 Contas/PDAs: `Market` (seed: match_id TxLINE), `Vault`, `Position` (por apostador); enum de estado Open → Locked → Settled
-- [ ] E2.2 `create_market`: cria PDA, define deadline (kickoff), estado Open
-- [ ] E2.3 `place_bet`: aposta SIM/NÃO → vault; cria/atualiza Position; rejeita após deadline
-- [ ] E2.4 `settle_market`: autoridade assina; grava outcome; estado Settled
-- [ ] E2.5 `claim`: payout `stake * pool_total / pool_vencedor`; só vencedor, só uma vez
-- [ ] E2.6 Testes de segurança: signer errado, mercado no estado errado, aposta após deadline, claim duplo, claim de perdedor
-- [ ] E2.7 Deploy em devnet (`anchor deploy --provider.cluster devnet`)
+- [x] E2.1 Contas/PDAs: `Market` (seed: match_id TxLINE), `Vault`, `Position` (por apostador); enum de estado Open → Locked → Settled
+- [x] E2.2 `create_market`: cria PDA, define deadline (kickoff), estado Open
+- [x] E2.3 `place_bet`: aposta SIM/NÃO → vault; cria/atualiza Position; rejeita após deadline
+- [x] E2.4 `settle_market`: autoridade assina; grava outcome; estado Settled
+- [x] E2.5 `claim`: payout `stake * pool_total / pool_vencedor`; só vencedor, só uma vez
+- [x] E2.6 Testes de segurança: signer errado, mercado no estado errado, aposta após deadline, claim duplo, claim de perdedor
+- [x] E2.7 Deploy em devnet — Program ID `FwFokFQm1uFrnvrSXKvTATXf2VY8GKnSoUpBrU5WWA85` (slot 476979228)
+
+> **Nota (17/07):** `Locked` não é variante armazenada — derivado de `now >= deadline`
+> (decisão do ARQUITETURA.md). `outcome: Option<bool>` (true = SIM). Apostador não
+> troca de lado (aposta repetida soma stake). Vault recebe rent-exempt mínimo no
+> `create_market` para o último claim não deixar dust abaixo do rent. 12 testes litesvm verdes.
 
 ## E3 — Settlement service (TypeScript)
 **Critério de saída:** partida do historical replay é resolvida E2E em devnet sem intervenção manual (create → bet → settle → claim).

@@ -13,3 +13,4 @@ test-ledger
 keypairs/
 .env
 service/.txline-auth.json
+app/dist

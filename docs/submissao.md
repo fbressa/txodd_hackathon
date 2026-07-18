@@ -47,8 +47,8 @@ committee, no manual resolution.
   create → bet → lock → settle from TxLINE replay → exact-payout claim
 
 **Links:**
-- Repo: TODO
-- Live app: TODO (hosting pendente — E4.5)
+- Repo: https://github.com/fbressa/txodd_hackathon
+- Live app: https://fbressa.github.io/txodd_hackathon/
 - Demo video: TODO (E5.2)
 - Program (devnet explorer):
   https://explorer.solana.com/address/FwFokFQm1uFrnvrSXKvTATXf2VY8GKnSoUpBrU5WWA85?cluster=devnet
@@ -56,8 +56,8 @@ committee, no manual resolution.
 ---
 
 ## Checklist antes de submeter (E5.4)
-- [ ] Repo público no GitHub (hoje o repo é só local no WSL!)
-- [ ] Link do frontend hospedado (E4.5)
+- [x] Repo público no GitHub: fbressa/txodd_hackathon
+- [x] Link do frontend hospedado (E4.5): GitHub Pages (workflow em .github/workflows/pages.yml)
 - [ ] Vídeo demo gravado (E5.2 — roteiro abaixo)
 - [ ] Conferir requisitos do formulário na página da trilha
 

@@ -64,19 +64,25 @@
 ## E4 — Frontend mínimo
 **Critério de saída:** no browser contra devnet: listar mercados, apostar, ver estado, claim — com wallet adapter.
 
-- [ ] E4.1 Scaffold (página única) + wallet adapter padrão
-- [ ] E4.2 Listar mercados (estado, pools, deadline)
-- [ ] E4.3 Apostar SIM/NÃO
-- [ ] E4.4 Claim para vencedores
-- [ ] E4.5 Deploy estável (frontend hospedado + programa devnet)
+- [x] E4.1 Scaffold (página única) + wallet adapter padrão
+- [x] E4.2 Listar mercados (estado, pools, deadline)
+- [x] E4.3 Apostar SIM/NÃO
+- [x] E4.4 Claim para vencedores
+- [ ] E4.5 Deploy estável (frontend hospedado + programa devnet) — **aguardando escolha de hosting (dev)**
+
+> **Nota (18/07):** `app/` = Vite + React 19, Wallet Standard (Phantom auto-detectado).
+> Decode manual das contas (sem client TS do Anchor); mesmas instruções byte-a-byte
+> do service validado E2E. Verificado no browser contra devnet: listagem, estado
+> derivado (Aberto/Travado/Resolvido), pools. **Falta teste manual com Phantom**
+> (apostar/claim assinando de verdade) — caminho on-chain já validado via e2e.ts.
 
 ## E5 — Submissão
 **Critério de saída:** submissão publicada no Superteam Earn até 17/07.
 
-- [ ] E5.1 README: arquitetura, como rodar, endereços devnet
-- [ ] E5.2 Vídeo demo: pipeline E2E resolvendo partida (replay) automaticamente
-- [ ] E5.3 Texto de submissão — ângulo: settlement trust-minimized via TxLINE (dados timestampados on-chain, validation proofs)
-- [ ] E5.4 Submeter no Earn (meta: 16–17/07)
+- [x] E5.1 README: arquitetura, como rodar, endereços devnet
+- [ ] E5.2 Vídeo demo: pipeline E2E resolvendo partida (replay) automaticamente — **dev grava** (roteiro em docs/submissao.md)
+- [x] E5.3 Texto de submissão — rascunho em docs/submissao.md (links TODO: repo público, app hospedado, vídeo)
+- [ ] E5.4 Submeter no Earn — **bloqueado por: repo público (GitHub), hosting (E4.5), vídeo (E5.2)**
 
 ## E6 — Stretch goals (SÓ após E5 submetido e SÓ se o dev pedir)
 - [ ] E6.1 Verificação de validation proof do TxLINE on-chain no `settle_market`

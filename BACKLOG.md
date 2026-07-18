@@ -68,7 +68,7 @@
 - [x] E4.2 Listar mercados (estado, pools, deadline)
 - [x] E4.3 Apostar SIM/NÃO
 - [x] E4.4 Claim para vencedores
-- [ ] E4.5 Deploy estável (frontend hospedado + programa devnet) — **aguardando escolha de hosting (dev)**
+- [x] E4.5 Deploy estável — GitHub Pages: https://fbressa.github.io/txodd_hackathon/ (workflow no push p/ master)
 
 > **Nota (18/07):** `app/` = Vite + React 19, Wallet Standard (Phantom auto-detectado).
 > Decode manual das contas (sem client TS do Anchor); mesmas instruções byte-a-byte
@@ -82,7 +82,7 @@
 - [x] E5.1 README: arquitetura, como rodar, endereços devnet
 - [ ] E5.2 Vídeo demo: pipeline E2E resolvendo partida (replay) automaticamente — **dev grava** (roteiro em docs/submissao.md)
 - [x] E5.3 Texto de submissão — rascunho em docs/submissao.md (links TODO: repo público, app hospedado, vídeo)
-- [ ] E5.4 Submeter no Earn — **bloqueado por: repo público (GitHub), hosting (E4.5), vídeo (E5.2)**
+- [ ] E5.4 Submeter no Earn — **bloqueado só pelo vídeo (E5.2)**; repo público ✅ (fbressa/txodd_hackathon) e hosting ✅
 
 ## E6 — Stretch goals (SÓ após E5 submetido e SÓ se o dev pedir)
 - [ ] E6.1 Verificação de validation proof do TxLINE on-chain no `settle_market`

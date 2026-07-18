@@ -26,9 +26,10 @@
 - [x] E1.4 GET fixtures OK — Copa = CompetitionId 72; 10 fixtures no devnet em 05/07
 - [x] E1.5 `docs/txline-notas.md` com formatos reais (fixture, score event, SSE)
 
-> **Pendência E1 (não bloqueia E2):** observar `GameState` de partida encerrada
-> e formato de `Data`/`Stats` com placar após o 1º jogo do devnet
-> (Brazil x Norway, 05/07 20:00 UTC, fixture 18187298). Necessário para o E3.2.
+> **Pendência E1 — RESOLVIDA (17/07):** fim de partida = evento `game_finalised`
+> (`StatusId: 100`) com placar final em `Score.*.Total.Goals` (`GameState` não muda,
+> não usar). Replay: `interval` = fatia de 5min a partir de `hourOfDay`.
+> Detalhes em `docs/txline-notas.md`.
 
 ## E2 — Programa Anchor (4 instruções)
 **Critério de saída:** `anchor test` verde cobrindo fluxo feliz + rejeições de segurança, com resultado mockado.
@@ -49,10 +50,16 @@
 ## E3 — Settlement service (TypeScript)
 **Critério de saída:** partida do historical replay é resolvida E2E em devnet sem intervenção manual (create → bet → settle → claim).
 
-- [ ] E3.1 Cliente TxLINE: auth (reusar E1) + consumo do endpoint de scores (snapshot/stream)
-- [ ] E3.2 Detecção de fim de partida → determinar outcome
-- [ ] E3.3 Chamar `settle_market` no programa em devnet
-- [ ] E3.4 Teste E2E com historical replay (determinístico, free tier)
+- [x] E3.1 Cliente TxLINE: auth (reusar E1) + consumo do endpoint de scores (snapshot/stream)
+- [x] E3.2 Detecção de fim de partida → determinar outcome (`game_finalised`, SIM = mandante vence, empate = NÃO)
+- [x] E3.3 Chamar `settle_market` no programa em devnet
+- [x] E3.4 Teste E2E com historical replay (determinístico, free tier)
+
+> **Nota (17/07):** E2E rodado em devnet com fixture real 18187298 (Brazil 1x2 Norway):
+> create → bets SIM/NÃO → settle via replay → claim 0.08 SOL exato + NotWinner p/ perdedor.
+> `service/`: `txline.ts` (client), `program.ts` (ix helpers), `settle.ts` (detecção
+> replay/polling + settle), `e2e.ts`. Reexecutar E2E exige `--match-id` novo (PDA único).
+> No WSL, `npm` exige shell interativo (`bash -ic`) — node vem do nvm.
 
 ## E4 — Frontend mínimo
 **Critério de saída:** no browser contra devnet: listar mercados, apostar, ver estado, claim — com wallet adapter.

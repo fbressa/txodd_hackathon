@@ -103,3 +103,32 @@ mesmo shape de evento do snapshot. Consumir com EventSource/parser SSE, não JSO
 - [ ] Valores de `GameState` durante e após o jogo (como detectar "encerrada")
 - [ ] Formato de `Data`/`Stats` com placar real
 - [ ] Replay histórico com conteúdo (granularidade do `interval`)
+
+## Formatos observados pós-jogo (17/07/2026, Brazil x Norway fixture 18187298)
+
+### Fim de partida (resolvida a pendência do E1)
+- **`GameState` NÃO muda** — ficou `"scheduled"` em todos os eventos, inclusive
+  durante e após o jogo. Não usar para settlement.
+- O marcador de fim é o evento **`Action: "game_finalised"`** (`StatusId: 100`),
+  que carrega o **placar final** em `Score`.
+- `StatusId` observados: 1, 2, 3, 4, 5 (in-play) e 100 (finalizado). Evento
+  `Action: "status"` traz `Data.StatusId` nas transições.
+
+### Placar
+- `Score.Participant1.Total.Goals` / `Score.Participant2.Total.Goals`
+  (campo **ausente = 0**; ex.: Brazil 1 x 2 Norway → P1 `{Goals:1}`, P2 `{Goals:2}`).
+- Mandante: `Participant1IsHome ? Participant1 : Participant2`.
+- Subdivisões `H1`/`HT`/`H2` existem; usar sempre `Total`.
+
+### `/api/scores/snapshot/{fixtureId}` (pós-jogo)
+Retorna o **último evento de cada `Action`** (41 eventos, 1 por tipo) — não é
+o histórico completo. O `game_finalised` está lá → detecção via snapshot polling
+funciona para jogo ao vivo.
+
+### Replay histórico `/api/scores/updates/{epochDay}/{hourOfDay}/{interval}`
+- **`interval` = índice de fatia de 5 minutos** a partir de `hourOfDay:00 UTC`:
+  janela = `[hourOfDay:00 + interval*5min, +5min)`. Verificado:
+  `20639/20/0` → 20:00–20:05 (kickoff), `20639/20/15` → 21:15–21:20,
+  `20639/20/25` → 22:05–22:10 (contém exatamente o `game_finalised`, placar 1–2).
+- Fatia sem eventos → `[]` HTTP 200.
+- Eventos têm o mesmo shape do snapshot (JSON array, não SSE).

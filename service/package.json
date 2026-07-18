@@ -2,7 +2,9 @@
   "name": "txodd-service",
   "private": true,
   "scripts": {
-    "subscribe": "tsx subscribe.ts"
+    "subscribe": "tsx subscribe.ts",
+    "settle": "tsx settle.ts",
+    "e2e": "tsx e2e.ts"
   },
   "dependencies": {
     "@solana/spl-token": "^0.4.9",

@@ -80,9 +80,9 @@
 **Critério de saída:** submissão publicada no Superteam Earn até 17/07.
 
 - [x] E5.1 README: arquitetura, como rodar, endereços devnet
-- [ ] E5.2 Vídeo demo: pipeline E2E resolvendo partida (replay) automaticamente — **dev grava** (roteiro em docs/submissao.md)
+- [x] E5.2 Vídeo demo gravado e publicado (19/07)
 - [x] E5.3 Texto de submissão — rascunho em docs/submissao.md (links TODO: repo público, app hospedado, vídeo)
-- [ ] E5.4 Submeter no Earn — **bloqueado só pelo vídeo (E5.2)**; repo público ✅ (fbressa/txodd_hackathon) e hosting ✅
+- [x] E5.4 **SUBMETIDO no Earn em 19/07**, dentro do prazo ✅
 
 ## E6 — Stretch goals (SÓ após E5 submetido e SÓ se o dev pedir)
 - [ ] E6.1 Verificação de validation proof do TxLINE on-chain no `settle_market`

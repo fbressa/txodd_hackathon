@@ -1,9 +1,9 @@
-# World Cup Prediction Market — trust-minimized settlement via TxLINE
+# World Cup Prediction Market: trust-minimized settlement via TxLINE
 
 Binary parimutuel prediction market on Solana (devnet) for World Cup 2026
 matches, with **fully automated settlement driven by the TxLINE data feed**.
 No human decides the outcome: the settlement service watches TxLINE score
-events — data that TxODDS timestamps on-chain — detects the final whistle and
+events (data that TxODDS timestamps on-chain), detects the final whistle and
 settles the market on-chain.
 
 Built for the World Cup Hackathon, *Prediction Markets & Settlement* track.
@@ -20,21 +20,21 @@ Frontend (React + wallet adapter) ──► Anchor program (devnet)
 ```
 
 Each market asks one question about a fixture: **will the home team win?**
-(draw counts as NO). Winners split the whole pool pro-rata to their stake —
+(draw counts as NO). Winners split the whole pool pro-rata to their stake:
 pure parimutuel, no orderbook, no oracle operator to trust for pricing.
 
-- **Market PDA** — seed = TxLINE `FixtureId`, so market ↔ fixture binding is
+- **Market PDA**: seed = TxLINE `FixtureId`, so market ↔ fixture binding is
   structural, not a config entry.
-- **States** — `Open` → locked at kickoff (derived from the on-chain clock, no
+- **States**: `Open` → locked at kickoff (derived from the on-chain clock, no
   cron) → `Settled` by the settlement authority with the TxLINE result.
-- **Payout** — `stake * pool_total / pool_winner`, u128 math, claim once,
+- **Payout**: `stake * pool_total / pool_winner`, u128 math, claim once,
   winners only. All security checks (signer, authority, state, deadline,
   double-claim) covered by 12 litesvm tests.
 
 ## Why TxLINE makes this trust-minimized
 
 The result written on-chain comes from the TxLINE feed, which TxODDS
-timestamps packet-by-packet on Solana — a tamper-evident audit trail for the
+timestamps packet-by-packet on Solana: a tamper-evident audit trail for the
 exact data that settled the market. The MVP has the service authority sign
 `settle_market`; verifying TxLINE **validation proofs inside the program** is
 the designed next step (the account layout and settlement path don't change).
@@ -50,7 +50,7 @@ the designed next step (the account layout and settlement path don't change).
 | `GET /api/scores/updates/{epochDay}/{hourOfDay}/{interval}` | Historical replay: deterministic settlement (5-min slices) |
 
 Observed formats and quirks are documented in
-[docs/txline-notas.md](docs/txline-notas.md) — nothing about the feed is invented.
+[docs/txline-notas.md](docs/txline-notas.md); nothing about the feed is invented.
 
 ## Devnet addresses
 
@@ -99,5 +99,5 @@ cd ../app && npm install && npm run dev
 The E2E run settles from the real devnet fixture **18187298
 (Brazil 1x2 Norway, 2026-07-05)** replayed through TxLINE's historical replay
 API: the service scans 5-minute slices from kickoff, finds the
-`game_finalised` event, extracts the final score and settles — the winning
-side claims the exact pool, the losing side is rejected with `NotWinner`.
+`game_finalised` event, extracts the final score and settles. The winning
+side claims the exact pool; the losing side is rejected with `NotWinner`.

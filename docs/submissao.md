@@ -109,14 +109,14 @@ Where we hit friction (all worked around, details in `docs/txline-notas.md`):
 > prediction market on Solana where the answer is: nobody. Custody is an
 > on-chain vault, and results come straight from the TxLINE data feed."
 >
-> **[Walkthrough: mercados abertos, apostar com a Phantom]**
+> **[Walkthrough: apostar com a Phantom no Spain x Argentina, antes do kickoff]**
 > "Each market is one question about a real fixture from the TxLINE feed:
 > will the home team win? Markets are created automatically for upcoming
-> fixtures, and betting closes at kickoff. Let me bet on Spain versus
-> Argentina. I choose my amount, I see my projected payout before signing —
-> this is a parimutuel market, winners split the whole pot — and I confirm
-> in my wallet. Done: my SOL is now in a program-owned vault that no private
-> key can touch."
+> fixtures, and betting closes at kickoff. Spain versus Argentina kicks off
+> in a few hours, so let me place a real bet. I choose my amount, I see my
+> projected payout before signing — this is a parimutuel market, winners
+> split the whole pot — and I confirm in my wallet. Done: my SOL is now in
+> a program-owned vault that no private key can touch."
 >
 > **[Tela: terminal, npm run e2e -- --match-id <novo>]**
 > "Now, settlement. This is the part judges care about, so let me run our
@@ -139,6 +139,8 @@ Where we hit friction (all worked around, details in `docs/txline-notas.md`):
 > "Today the settlement authority relays what the feed says. The next step is
 > already designed: verifying TxLINE's validation proofs inside the program
 > itself — the 'experimental verification layer' this track calls for.
+> And the Spain–Argentina market you saw me bet on? It will settle itself
+> automatically, about two hours after kickoff, with no one at the keyboard.
 > Thanks for watching."
 
 ## Roteiro do vídeo (E5.2, até 5 min — requisito: problema → walkthrough → como o TxLINE alimenta o backend)

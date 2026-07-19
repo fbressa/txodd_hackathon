@@ -287,6 +287,20 @@ function MarketCard({
       {!publicKey && st === "open" && (
         <div className="connect-cta">Conecte a carteira (botão no topo) para apostar.</div>
       )}
+
+      {st === "settled" && (
+        <div className="verify">
+          Resolução verificável: placar da fixture TxLINE {market.matchId.toString()}
+          {" · "}
+          <a
+            href={`https://explorer.solana.com/address/${market.address.toBase58()}?cluster=devnet`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            settlement on-chain no explorer
+          </a>
+        </div>
+      )}
     </div>
   );
 }

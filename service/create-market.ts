@@ -1,34 +1,63 @@
-// Cria um mercado para uma fixture real: deadline = kickoff do feed TxLINE.
-// Uso: npx tsx create-market.ts --fixture 18257865
+// Cria mercados para fixtures reais: deadline = kickoff do feed TxLINE.
+// Uso:
+//   npx tsx create-market.ts --fixture 18257865   # uma fixture
+//   npx tsx create-market.ts --all                # toda fixture futura sem mercado
 import { Connection } from "@solana/web3.js";
 import * as fs from "fs";
 import * as path from "path";
 import { createMarketIx, loadAuthorityKeypair, marketPda, sendIx, RPC_URL } from "./program";
 
-async function main() {
-  const args = process.argv.slice(2);
-  const i = args.indexOf("--fixture");
-  const fixtureId = i >= 0 ? Number(args[i + 1]) : NaN;
-  if (!fixtureId) throw new Error("uso: tsx create-market.ts --fixture <id>");
+interface FixtureEntry { home: string; away: string; kickoff: number; competition: string }
 
-  const fixtures = JSON.parse(
+function loadFixtures(): Record<string, FixtureEntry> {
+  return JSON.parse(
     fs.readFileSync(path.join(__dirname, "..", "app", "src", "fixtures.json"), "utf-8")
   );
-  const fx = fixtures[String(fixtureId)];
-  if (!fx) throw new Error(`fixture ${fixtureId} não está em app/src/fixtures.json — rode export-fixtures.ts`);
+}
 
+async function createOne(
+  connection: Connection,
+  fixtureId: number,
+  fx: FixtureEntry
+): Promise<void> {
+  const matchId = BigInt(fixtureId);
+  const market = marketPda(matchId);
+  if (await connection.getAccountInfo(market)) {
+    console.log(`- ${fx.home} x ${fx.away}: mercado já existe (${market.toBase58()})`);
+    return;
+  }
   const deadline = BigInt(Math.floor(fx.kickoff / 1000));
-  if (deadline <= BigInt(Math.floor(Date.now() / 1000))) {
-    throw new Error(`kickoff de ${fx.home} x ${fx.away} já passou — mercado não faria sentido`);
+  const authority = loadAuthorityKeypair();
+  const sig = await sendIx(connection, authority, createMarketIx(authority.publicKey, matchId, deadline));
+  console.log(
+    `+ ${fx.home} x ${fx.away} (${fx.competition}) | kickoff ${new Date(fx.kickoff).toISOString()}\n  market ${market.toBase58()} | tx ${sig}`
+  );
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+  const connection = new Connection(RPC_URL, "confirmed");
+  const fixtures = loadFixtures();
+  const now = Date.now();
+
+  if (args.includes("--all")) {
+    const upcoming = Object.entries(fixtures).filter(([, fx]) => fx.kickoff > now);
+    console.log(`${upcoming.length} fixtures futuras no feed`);
+    for (const [id, fx] of upcoming) {
+      await createOne(connection, Number(id), fx);
+    }
+    return;
   }
 
-  const authority = loadAuthorityKeypair();
-  const connection = new Connection(RPC_URL, "confirmed");
-  const matchId = BigInt(fixtureId);
-  console.log(`${fx.home} x ${fx.away} (${fx.competition}) | kickoff ${new Date(fx.kickoff).toISOString()}`);
-  console.log(`market ${marketPda(matchId).toBase58()}`);
-  const sig = await sendIx(connection, authority, createMarketIx(authority.publicKey, matchId, deadline));
-  console.log(`create_market ok: ${sig}`);
+  const i = args.indexOf("--fixture");
+  const fixtureId = i >= 0 ? Number(args[i + 1]) : NaN;
+  if (!fixtureId) throw new Error("uso: tsx create-market.ts --fixture <id> | --all");
+  const fx = fixtures[String(fixtureId)];
+  if (!fx) throw new Error(`fixture ${fixtureId} não está em app/src/fixtures.json — rode export-fixtures.ts`);
+  if (fx.kickoff <= now) {
+    throw new Error(`kickoff de ${fx.home} x ${fx.away} já passou — mercado não faria sentido`);
+  }
+  await createOne(connection, fixtureId, fx);
 }
 
 main().catch((err) => {

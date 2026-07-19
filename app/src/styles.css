@@ -105,6 +105,12 @@ body {
 .btn.claim { background: linear-gradient(180deg, #e8bd27, #c29a0a); color: #1a1400; width: 100%; }
 .hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
 
+.verify {
+  margin-top: 12px; font-size: 12px; color: var(--muted);
+  border-top: 1px solid var(--card-border); padding-top: 10px;
+}
+.verify a { color: var(--accent); text-decoration: none; }
+
 .connect-cta {
   text-align: center; color: var(--muted); font-size: 13px; margin-top: 12px;
   border-top: 1px solid var(--card-border); padding-top: 12px;

@@ -39,6 +39,19 @@ exact data that settled the market. The MVP has the service authority sign
 `settle_market`; verifying TxLINE **validation proofs inside the program** is
 the designed next step (the account layout and settlement path don't change).
 
+## TxLINE endpoints used
+
+| Endpoint / interaction | Use |
+|---|---|
+| `subscribe` ix on the txoracle program (on-chain tx) | Free-tier subscription that authorizes API access |
+| `POST /auth/guest/start` → `POST /api/token/activate` | Auth: guest JWT, then wallet-signed token activation |
+| `GET /api/fixtures/snapshot` | Market creation (fixture id = PDA seed, kickoff = deadline) and team names in the UI |
+| `GET /api/scores/snapshot/{fixtureId}` | Live settlement: 60s polling for the `game_finalised` event |
+| `GET /api/scores/updates/{epochDay}/{hourOfDay}/{interval}` | Historical replay: deterministic settlement (5-min slices) |
+
+Observed formats and quirks are documented in
+[docs/txline-notas.md](docs/txline-notas.md) — nothing about the feed is invented.
+
 ## Devnet addresses
 
 | What | Address |

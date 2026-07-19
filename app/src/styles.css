@@ -119,6 +119,15 @@ body {
 .empty { text-align: center; color: var(--muted); padding: 40px 0; }
 
 .wallet-area { display: flex; align-items: center; gap: 10px; }
+.lang-switch {
+  display: flex; border: 1px solid var(--card-border); border-radius: 999px;
+  overflow: hidden;
+}
+.lang-btn {
+  background: transparent; border: 0; color: var(--muted); font-size: 12px;
+  font-weight: 700; padding: 6px 12px; cursor: pointer;
+}
+.lang-btn.active { background: var(--accent); color: #fff; }
 .balance {
   font-size: 13px; font-weight: 600; color: var(--text);
   background: #10192e; border: 1px solid var(--card-border);

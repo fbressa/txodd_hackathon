@@ -1,6 +1,6 @@
 // E4 — página única: lista mercados, aposta SIM/NÃO, claim. i18n EN/PT em i18n.ts.
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { LAMPORTS_PER_SOL, Transaction } from "@solana/web3.js";
+import { ComputeBudgetProgram, LAMPORTS_PER_SOL, Transaction } from "@solana/web3.js";
 import { ConnectionProvider, WalletProvider, useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { WalletModalProvider, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import "@solana/wallet-adapter-react-ui/styles.css";
@@ -309,7 +309,7 @@ function HowItWorks({ t }: { t: Strings }) {
 
 function Page() {
   const { connection } = useConnection();
-  const { publicKey, sendTransaction } = useWallet();
+  const { publicKey, sendTransaction, signTransaction } = useWallet();
   const [lang, setLang] = useState<LangCode>(
     () => (localStorage.getItem("lang") === "pt" ? "pt" : "en")
   );
@@ -356,30 +356,53 @@ function Page() {
     return () => clearInterval(timer);
   }, [refresh]);
 
-  // Devnet costuma passar dos 30s do confirmTransaction; insistir mais ~40s
-  // consultando o status antes de declarar incerteza.
-  const confirmWithRetry = async (sig: string): Promise<boolean> => {
-    try {
-      await connection.confirmTransaction(sig, "confirmed");
-      return true;
-    } catch {
-      for (let i = 0; i < 8; i++) {
-        const st = (await connection.getSignatureStatuses([sig])).value[0];
-        if (st?.confirmationStatus === "confirmed" || st?.confirmationStatus === "finalized") {
-          return st.err === null;
-        }
-        await new Promise((r) => setTimeout(r, 5000));
-      }
-      return false;
-    }
-  };
-
+  // Devnet descarta txs sem priority fee, e o broadcast via RPC da wallet é
+  // pouco confiável: assinamos na wallet mas transmitimos pelo nosso RPC,
+  // com rebroadcast a cada 2s até confirmar ou o blockhash expirar.
   const onAction = async (build: () => Transaction, okMsg: string): Promise<boolean> => {
+    let sig: string | undefined;
     try {
       setToast({ kind: "info", msg: t.approveTx });
-      const sig = await sendTransaction(build(), connection);
-      setToast({ kind: "info", msg: t.confirming });
-      const ok = await confirmWithRetry(sig);
+      const tx = build();
+      tx.instructions.unshift(
+        ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 200_000 })
+      );
+
+      let ok: boolean;
+      if (signTransaction) {
+        tx.feePayer = publicKey!;
+        const { blockhash, lastValidBlockHeight } =
+          await connection.getLatestBlockhash("confirmed");
+        tx.recentBlockhash = blockhash;
+        const raw = (await signTransaction(tx)).serialize();
+        setToast({ kind: "info", msg: t.confirming });
+        sig = await connection.sendRawTransaction(raw, { maxRetries: 5 });
+        ok = await (async () => {
+          for (let i = 0; i < 40; i++) {
+            const st = (await connection.getSignatureStatuses([sig!])).value[0];
+            if (st?.confirmationStatus === "confirmed" || st?.confirmationStatus === "finalized") {
+              return st.err === null;
+            }
+            if ((await connection.getBlockHeight("confirmed")) > lastValidBlockHeight) {
+              return false;
+            }
+            try {
+              await connection.sendRawTransaction(raw, { skipPreflight: true, maxRetries: 0 });
+            } catch {}
+            await new Promise((r) => setTimeout(r, 2000));
+          }
+          return false;
+        })();
+      } else {
+        // wallet sem signTransaction: caminho padrão do adapter
+        sig = await sendTransaction(tx, connection);
+        setToast({ kind: "info", msg: t.confirming });
+        ok = await connection
+          .confirmTransaction(sig, "confirmed")
+          .then(() => true)
+          .catch(() => false);
+      }
+
       await refresh();
       if (!ok) {
         setToast({ kind: "error", msg: t.errors.unconfirmed, sig });
@@ -388,7 +411,7 @@ function Page() {
       setToast({ kind: "success", msg: okMsg, sig });
       return true;
     } catch (e: any) {
-      setToast({ kind: "error", msg: humanError(t, String(e.message ?? e)) });
+      setToast({ kind: "error", msg: humanError(t, String(e.message ?? e)), sig });
       return false;
     }
   };

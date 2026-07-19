@@ -356,14 +356,36 @@ function Page() {
     return () => clearInterval(timer);
   }, [refresh]);
 
+  // Devnet costuma passar dos 30s do confirmTransaction; insistir mais ~40s
+  // consultando o status antes de declarar incerteza.
+  const confirmWithRetry = async (sig: string): Promise<boolean> => {
+    try {
+      await connection.confirmTransaction(sig, "confirmed");
+      return true;
+    } catch {
+      for (let i = 0; i < 8; i++) {
+        const st = (await connection.getSignatureStatuses([sig])).value[0];
+        if (st?.confirmationStatus === "confirmed" || st?.confirmationStatus === "finalized") {
+          return st.err === null;
+        }
+        await new Promise((r) => setTimeout(r, 5000));
+      }
+      return false;
+    }
+  };
+
   const onAction = async (build: () => Transaction, okMsg: string): Promise<boolean> => {
     try {
       setToast({ kind: "info", msg: t.approveTx });
       const sig = await sendTransaction(build(), connection);
       setToast({ kind: "info", msg: t.confirming });
-      await connection.confirmTransaction(sig, "confirmed");
-      setToast({ kind: "success", msg: okMsg, sig });
+      const ok = await confirmWithRetry(sig);
       await refresh();
+      if (!ok) {
+        setToast({ kind: "error", msg: t.errors.unconfirmed, sig });
+        return false;
+      }
+      setToast({ kind: "success", msg: okMsg, sig });
       return true;
     } catch (e: any) {
       setToast({ kind: "error", msg: humanError(t, String(e.message ?? e)) });

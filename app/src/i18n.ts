@@ -75,6 +75,7 @@ const en = {
     notOpen: "This market no longer accepts bets.",
     notSettled: "The market is not resolved yet. Wait for the match to end.",
     insufficient: "Insufficient balance. On devnet, get test SOL at faucet.solana.com.",
+    unconfirmed: "Devnet is congested and the confirmation timed out. Your transaction may still land, check it below and refresh in a moment.",
   },
 };
 
@@ -152,6 +153,7 @@ const pt: typeof en = {
     notOpen: "Este mercado não aceita mais apostas.",
     notSettled: "O mercado ainda não foi resolvido. Aguarde o fim do jogo.",
     insufficient: "Saldo insuficiente. Em devnet, pegue SOL de teste em faucet.solana.com.",
+    unconfirmed: "A devnet está congestionada e a confirmação estourou o tempo. Sua transação ainda pode entrar, confira abaixo e atualize em instantes.",
   },
 };
 

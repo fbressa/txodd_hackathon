@@ -50,6 +50,10 @@ committee, no manual resolution.
 - Repo: https://github.com/fbressa/txodd_hackathon
 - Live app: https://fbressa.github.io/txodd_hackathon/
 - Demo video: TODO (E5.2)
+
+Note for judges: Phantom may flag the freshly-registered GitHub Pages domain
+with a generic warning. This is a devnet-only demo (no real funds); choose
+"proceed" to test the app.
 - Program (devnet explorer):
   https://explorer.solana.com/address/FwFokFQm1uFrnvrSXKvTATXf2VY8GKnSoUpBrU5WWA85?cluster=devnet
 

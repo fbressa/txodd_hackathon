@@ -33,13 +33,13 @@ const statusOf = (m: Market, nowMs: number): Status =>
 
 // Heurística 9: erros da carteira/programa traduzidos para linguagem humana
 const ERROR_MAP: Array<[RegExp, string]> = [
-  [/User rejected/i, "Transação cancelada na carteira — nada foi enviado."],
+  [/User rejected/i, "Transação cancelada na carteira. Nada foi enviado."],
   [/0x1772|DeadlinePassed/, "As apostas desta partida já fecharam (kickoff atingido)."],
-  [/0x1775|SideMismatch/, "Você já tem posição no outro lado deste mercado — não dá para trocar de lado."],
+  [/0x1775|SideMismatch/, "Você já tem posição no outro lado deste mercado, não dá para trocar de lado."],
   [/0x1777|AlreadyClaimed/, "Este prêmio já foi resgatado."],
   [/0x1778|NotWinner/, "Sua posição não está no lado vencedor."],
   [/0x1771|MarketNotOpen/, "Este mercado não aceita mais apostas."],
-  [/0x1776|MarketNotSettled/, "O mercado ainda não foi resolvido — aguarde o fim do jogo."],
+  [/0x1776|MarketNotSettled/, "O mercado ainda não foi resolvido. Aguarde o fim do jogo."],
   [/insufficient|debit an account|0x1$/i, "Saldo insuficiente. Em devnet, pegue SOL de teste em faucet.solana.com."],
 ];
 const humanError = (raw: string): string => {
@@ -71,7 +71,7 @@ function countdown(deadline: number, nowMs: number): string {
 
 function multiplier(m: Market, side: boolean): string {
   const pool = side ? m.poolSim : m.poolNao;
-  if (pool === 0n) return "—";
+  if (pool === 0n) return "";
   return `×${(Number(m.poolSim + m.poolNao) / Number(pool)).toFixed(2)}`;
 }
 
@@ -120,7 +120,7 @@ function MarketCard({
 
   // Heurística 3: confirmação com o resultado projetado antes de enviar
   const projPayout = (side: boolean): string => {
-    if (isNaN(amt) || amt <= 0) return "—";
+    if (isNaN(amt) || amt <= 0) return "";
     const lam = BigInt(Math.round(amt * LAMPORTS_PER_SOL));
     const myStake = (position && position.side === side ? position.stake : 0n) + lam;
     const poolSide = (side ? market.poolSim : market.poolNao) + lam;
@@ -143,7 +143,7 @@ function MarketCard({
     setBusy(true);
     await onAction(
       () => new Transaction().add(claimIx(publicKey!, market.address)),
-      "Prêmio resgatado — SOL na sua carteira!"
+      "Prêmio resgatado! O SOL já está na sua carteira."
     );
     setBusy(false);
   };
@@ -165,7 +165,7 @@ function MarketCard({
         <StatusBadge market={market} nowMs={nowMs} />
       </div>
       <div className="question">
-        Mercado: <b>o {home} (mandante) vence?</b> — empate ou vitória do {away} conta como NÃO
+        Mercado: <b>o {home} (mandante) vence?</b> Empate ou vitória do {away} conta como NÃO.
       </div>
       <div className="kickoff">
         Kickoff: {fmtDate(market.deadline)}
@@ -193,11 +193,11 @@ function MarketCard({
           Sua posição: <b>{sol(position.stake)} SOL no {position.side ? "SIM" : "NÃO"}</b>
           {market.settled &&
             (position.claimed ? (
-              <span className="win"> — prêmio resgatado ✓</span>
+              <span className="win"> · prêmio resgatado ✓</span>
             ) : won ? (
-              <span className="win"> — você venceu! Prêmio: {sol(payout)} SOL</span>
+              <span className="win"> · você venceu! Prêmio: {sol(payout)} SOL</span>
             ) : (
-              <span className="lose"> — não foi dessa vez</span>
+              <span className="lose"> · não foi dessa vez</span>
             ))}
         </div>
       )}
@@ -224,7 +224,7 @@ function MarketCard({
             <button
               className="btn sim"
               disabled={busy || amountInvalid || noFunds || lockedSide === false}
-              title={lockedSide === false ? "Você já apostou no NÃO — não dá para trocar de lado" : undefined}
+              title={lockedSide === false ? "Você já apostou no NÃO, não dá para trocar de lado" : undefined}
               onClick={() => setPendingSide(true)}
             >
               SIM {multiplier(market, true)}
@@ -232,7 +232,7 @@ function MarketCard({
             <button
               className="btn nao"
               disabled={busy || amountInvalid || noFunds || lockedSide === true}
-              title={lockedSide === true ? "Você já apostou no SIM — não dá para trocar de lado" : undefined}
+              title={lockedSide === true ? "Você já apostou no SIM, não dá para trocar de lado" : undefined}
               onClick={() => setPendingSide(false)}
             >
               NÃO {multiplier(market, false)}
@@ -246,7 +246,7 @@ function MarketCard({
           )}
           {!amountInvalid && !noFunds && lockedSide !== null && (
             <div className="hint">
-              Você já tem posição no {lockedSide ? "SIM" : "NÃO"} — apostas novas somam nesse lado.
+              Você já tem posição no {lockedSide ? "SIM" : "NÃO"}. Apostas novas somam nesse lado.
             </div>
           )}
           {!amountInvalid && !noFunds && lockedSide === null && (
@@ -301,7 +301,7 @@ function HowItWorks() {
       </div>
       <div className="step">
         <b><span className="num">2</span>Trava no kickoff</b>
-        Quando a bola rola, o mercado trava — ninguém mais entra.
+        Quando a bola rola, o mercado trava. Ninguém mais entra.
       </div>
       <div className="step">
         <b><span className="num">3</span>Settlement automático</b>
@@ -363,7 +363,7 @@ function Page() {
     try {
       setToast({ kind: "info", msg: "Aprove a transação na sua carteira…" });
       const sig = await sendTransaction(build(), connection);
-      setToast({ kind: "info", msg: "Enviada — confirmando na devnet…" });
+      setToast({ kind: "info", msg: "Enviada, confirmando na devnet…" });
       await connection.confirmTransaction(sig, "confirmed");
       setToast({ kind: "success", msg: okMsg, sig });
       await refresh();
@@ -460,7 +460,7 @@ function Page() {
           {PROGRAM_ID.toBase58()}
         </a>
         <br />
-        Rede de teste (devnet) — SOL sem valor real; pegue o seu em{" "}
+        Rede de teste (devnet): SOL sem valor real; pegue o seu em{" "}
         <a href="https://faucet.solana.com" target="_blank" rel="noreferrer">faucet.solana.com</a>
         <br />
         Dados de partidas e placares: TxLINE (TxODDS) ·{" "}

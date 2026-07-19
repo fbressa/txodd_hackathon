@@ -111,10 +111,58 @@ body {
 }
 
 .empty { text-align: center; color: var(--muted); padding: 40px 0; }
-.error {
-  background: #3b1512; border: 1px solid var(--nao-dim); color: #ffb3aa;
+
+.wallet-area { display: flex; align-items: center; gap: 10px; }
+.balance {
+  font-size: 13px; font-weight: 600; color: var(--text);
+  background: #10192e; border: 1px solid var(--card-border);
+  border-radius: 999px; padding: 6px 14px;
+}
+
+.section-h {
+  font-size: 14px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 1px; margin: 26px 0 10px;
+}
+.countdown { color: var(--gold); font-weight: 600; }
+
+.toast {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
   border-radius: 8px; padding: 10px 14px; margin: 12px 0; font-size: 13px;
   word-break: break-word;
+}
+.toast.info    { background: #12203c; border: 1px solid #23407c; color: #b9cdf5; }
+.toast.success { background: #14351f; border: 1px solid var(--sim-dim); color: #a9e8c4; }
+.toast.error   { background: #3b1512; border: 1px solid var(--nao-dim); color: #ffb3aa; }
+.toast a { color: inherit; font-weight: 700; }
+.close-x {
+  background: none; border: 0; color: inherit; font-size: 18px; line-height: 1;
+  cursor: pointer; padding: 2px 6px; opacity: 0.7;
+}
+.close-x:hover { opacity: 1; }
+
+.chips { display: flex; gap: 6px; }
+.chip {
+  background: #10192e; border: 1px solid var(--card-border); color: var(--muted);
+  border-radius: 999px; padding: 7px 12px; font-size: 12px; cursor: pointer;
+}
+.chip:hover { color: var(--text); border-color: var(--accent); }
+
+.confirm {
+  margin-top: 14px; background: #10192e; border: 1px solid var(--accent);
+  border-radius: 10px; padding: 12px 14px;
+}
+.confirm-text { font-size: 13px; line-height: 1.5; color: var(--muted); }
+.confirm-text b { color: var(--text); }
+.confirm .controls { margin-top: 10px; }
+.btn.ghost {
+  background: transparent; border: 1px solid var(--card-border); color: var(--muted);
+}
+
+.hint.warn { color: var(--gold); }
+input[aria-invalid="true"] { border-color: var(--nao); }
+
+button:focus-visible, input:focus-visible, a:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
 }
 .footer { color: var(--muted); font-size: 12px; margin-top: 28px; text-align: center; line-height: 1.7; }
 .footer a { color: var(--accent); text-decoration: none; }

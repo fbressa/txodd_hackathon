@@ -43,7 +43,9 @@ export function decodeMarket(address: PublicKey, data: Uint8Array): Market | nul
   const authority = new PublicKey(data.slice(o, o + 32)); o += 32;
   const deadline = Number(v.getBigInt64(o, true)); o += 8;
   const settled = data[o] === 1; o += 1;
-  const outcome = data[o] === 1 ? data[o + 1] === 1 : null; o += 2;
+  // borsh Option<bool>: 1 byte de tag (None) ou 2 bytes (Some) — tamanho variável
+  let outcome: boolean | null = null;
+  if (data[o] === 1) { outcome = data[o + 1] === 1; o += 2; } else { o += 1; }
   const poolSim = v.getBigUint64(o, true); o += 8;
   const poolNao = v.getBigUint64(o, true); o += 8;
   return { address, matchId, authority, deadline, settled, outcome, poolSim, poolNao };

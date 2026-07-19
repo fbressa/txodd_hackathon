@@ -101,6 +101,46 @@ Where we hit friction (all worked around, details in `docs/txline-notas.md`):
 - [ ] Vídeo demo gravado (E5.2 — roteiro abaixo; **é o item de maior peso no julgamento**)
 - [ ] Submeter até 19/07 23:59 UTC (20:59 BRT) — não deixar para a última hora
 
+## Script de narração em inglês (ler pausadamente; ~4 min)
+
+> **[Tela: app publicado]**
+> "Prediction markets live or die on one question: who do you have to trust?
+> Who holds the money, and who decides the result? We built a World Cup
+> prediction market on Solana where the answer is: nobody. Custody is an
+> on-chain vault, and results come straight from the TxLINE data feed."
+>
+> **[Walkthrough: mercados abertos, apostar com a Phantom]**
+> "Each market is one question about a real fixture from the TxLINE feed:
+> will the home team win? Markets are created automatically for upcoming
+> fixtures, and betting closes at kickoff. Let me bet on Spain versus
+> Argentina. I choose my amount, I see my projected payout before signing —
+> this is a parimutuel market, winners split the whole pot — and I confirm
+> in my wallet. Done: my SOL is now in a program-owned vault that no private
+> key can touch."
+>
+> **[Tela: terminal, npm run e2e -- --match-id <novo>]**
+> "Now, settlement. This is the part judges care about, so let me run our
+> end-to-end pipeline live against a real match: Brazil versus Norway, played
+> on July 5th, replayed deterministically through TxLINE's historical replay
+> API. Watch: the script creates a market, places two bets, waits for the
+> deadline... and now the settlement service scans the match in five-minute
+> slices, exactly as it would poll a live game. There: the game-finalised
+> event, final score one-two. Norway won, so the outcome is NO — written
+> on-chain by settle_market. The winner claims the exact pot, and the loser's
+> claim is rejected by the program. No human touched the result."
+>
+> **[Tela: explorer devnet, tx do settle e claim; card resolvido]**
+> "Everything is verifiable: here's the settlement transaction on devnet, and
+> the app links every resolved market to its on-chain settlement. And because
+> TxODDS timestamps every data packet on Solana, the data that settled this
+> market has a tamper-evident audit trail."
+>
+> **[Fechamento]**
+> "Today the settlement authority relays what the feed says. The next step is
+> already designed: verifying TxLINE's validation proofs inside the program
+> itself — the 'experimental verification layer' this track calls for.
+> Thanks for watching."
+
 ## Roteiro do vídeo (E5.2, até 5 min — requisito: problema → walkthrough → como o TxLINE alimenta o backend)
 1. **O problema (30s):** "Mercados de previsão morrem numa pergunta: quem custodia
    o dinheiro e quem decide o resultado? Nós tiramos o humano das duas pontas:

@@ -1,4 +1,4 @@
-# E5.3/E5.4 — Submissão no Superteam Earn (ENVIADA em 19/07/2026)
+# E5.3/E5.4: Submissão no Superteam Earn (ENVIADA em 19/07/2026)
 
 > Registro do texto submetido no formulário da trilha
 > "Prediction Markets and Settlement". Submissão feita dentro do prazo
@@ -98,7 +98,7 @@ Where we hit friction (all worked around, details in `docs/txline-notas.md`):
 
 ---
 
-## Checklist da submissão (E5.4) — CONCLUÍDA
+## Checklist da submissão (E5.4): CONCLUÍDA
 - [x] Repo público no GitHub: fbressa/txodd_hackathon
 - [x] Frontend hospedado (E4.5): GitHub Pages
 - [x] Lista de endpoints TxLINE (requisito "brief technical documentation")
